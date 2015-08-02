@@ -1,0 +1,14 @@
+#bingo-table {
+  width: 100%;
+}
+
+#bingo-table td {
+  width: 20%;
+  text-align: center;
+  background-color: #626262;
+  color: #ffffff;
+}
+
+#bingo-table td:hover {
+  background-color: #0a304e;
+}

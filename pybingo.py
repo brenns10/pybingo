@@ -9,11 +9,14 @@ import os.path
 
 CONNECTIONS = set()
 
+import random
+BOARD = random.sample([str(x) for x in range(100)], 24)
+
 
 class BingoHandler(RequestHandler):
 
     def get(self):
-        self.render('templates/bingo.html')
+        self.render('templates/bingo.html', cells=BOARD)
 
 
 class ChatHandler(WebSocketHandler):
