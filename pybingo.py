@@ -7,6 +7,7 @@ import tornado.ioloop
 import os.path
 import argparse
 import json
+import random
 
 CONNECTIONS = {}
 BOARD = []
@@ -17,7 +18,7 @@ NCHATTERS = 0
 class BingoHandler(RequestHandler):
 
     def get(self):
-        self.render('templates/bingo.html', cells=BOARD)
+        self.render('templates/bingo.html', cells=random.sample(BOARD, 24))
 
 
 class JSHandler(RequestHandler):
@@ -128,6 +129,7 @@ if __name__ == '__main__':
 
     # Set important globals.
     BOARD = [l.strip() for l in args.board]
+    random.shuffle(BOARD)
     WSURL = 'ws://%s:%d/chat' % (args.host, args.port)
 
     # Run application.
