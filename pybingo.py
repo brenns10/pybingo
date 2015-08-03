@@ -6,11 +6,12 @@ from tornado.websocket import WebSocketHandler
 import tornado.ioloop
 import os.path
 import argparse
-import sys
+import json
 
-CONNECTIONS = set()
+CONNECTIONS = {}
 BOARD = []
 WSURL = ''
+NCHATTERS = 0
 
 
 class BingoHandler(RequestHandler):
@@ -28,19 +29,66 @@ class JSHandler(RequestHandler):
 class ChatHandler(WebSocketHandler):
 
     def broadcast(self, message):
-        for handler in CONNECTIONS:
-            handler.write_message(message)
+        if self.nick is None:
+            self.chat_error('You must set your nickname first.')
+            return
+        message['from'] = self.nick
+        for handler in CONNECTIONS.values():
+            handler.write_message(json.dumps(message))
 
     def open(self):
-        CONNECTIONS.add(self)
-        self.write_message('Welcome to Case Bingo Chat!\n')
+        self.nick = None
+
+    def chat_error(self, msg):
+        r = {'cmd': 'error', 'msg': msg}
+        self.write_message(json.dumps(r))
+
+    def set_nick(self, nick):
+        if nick in CONNECTIONS:
+            self.chat_error('That nick is already taken.')
+            return
+        if self.nick is not None:
+            r = {'cmd': 'server',
+                 'msg': '%s is now known is %s' % (self.nick, nick)}
+            del CONNECTIONS[self.nick]
+        else:
+            r = {'cmd': 'server',
+                 'msg': '%s has joined the chat' % nick}
+        self.nick = nick
+        CONNECTIONS[self.nick] = self
+        self.broadcast(r)
 
     def on_message(self, message):
-        print('Received message: ' + message)
-        self.broadcast(message)
+        try:
+            msg = json.loads(message)
+        except ValueError:
+            self.chat_error('Could not decode JSON message.')
+            return
+
+        if 'cmd' not in msg:
+            self.chat_error('Missing "cmd" argument.')
+            return
+
+        if msg['cmd'].lower() == 'msg':
+            if 'msg' in msg:
+                self.broadcast(msg)
+            else:
+                self.chat_error('No message in msg command.')
+        elif msg['cmd'].lower() == 'emote':
+            if 'msg' in msg:
+                self.broadcast(msg)
+            else:
+                self.chat_error('No message in emote command.')
+        elif msg['cmd'].lower() == 'nick':
+            if 'nick' in msg:
+                self.set_nick(msg['nick'])
+            else:
+                self.chat_error('You must specify a nickname.')
+        else:
+            self.chat_error('Invalid chat command.')
 
     def on_close(self):
-        CONNECTIONS.remove(self)
+        del CONNECTIONS[self.nick]
 
 
 def make_app():

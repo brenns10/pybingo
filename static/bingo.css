@@ -50,3 +50,16 @@
     bottom: 0;
     width: 95%;
 }
+
+#chat-box .chat-from {
+    font-weight: bold;
+}
+
+#chat-box .chat-err {
+    font-weight: bold;
+    color: red;
+}
+
+#chat-box .chat-server {
+    font-style: italic;
+}

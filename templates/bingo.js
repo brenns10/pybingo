@@ -5,13 +5,32 @@ var PB_CHATMSG = "chat-msg"
 var PB_BINGOTBL = "bingo-table"
 var PB_CELLS;
 
+PB_WEBSOCKET.onopen = function (e) {
+    var chat_obj = {};
+    chat_obj["cmd"] = "nick";
+    chat_obj["nick"] = PB_USERNAME;
+    PB_WEBSOCKET.send(JSON.stringify(chat_obj));
+    console.log("Sending nick command.");
+    console.log(chat_obj);
+};
+
 /*
   Message receipt function.
 */
 PB_WEBSOCKET.onmessage = function (e) {
     var chat_box = document.getElementById(PB_CHATBOX);
-    chat_box.innerText += e.data;
-    console.log("Receive message: " + e.data);
+    var message = JSON.parse(e.data);
+    if (message.cmd == "msg") {
+        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + ": </span>"
+        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+    } if (message.cmd == "error") {
+        chat_box.innerHTML += "<span class=\"chat-err\">error: </span>";
+        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+    } if (message.cmd == "server") {
+        chat_box.innerHTML += "<span class=\"chat-server\">" + message.msg + "</span><br>";
+    }
+    console.log("Receive Message");
+    console.log(e.data);
 }
 
 /*
@@ -20,8 +39,13 @@ PB_WEBSOCKET.onmessage = function (e) {
 function pb_send(event) {
     if (event.keyCode == 13) {
         var chat_msg = document.getElementById(PB_CHATMSG);
-        PB_WEBSOCKET.send(PB_USERNAME + ": " + chat_msg.value + "\n");
+        var chat_obj = {};
+        chat_obj["cmd"] = "msg";
+        chat_obj["msg"] = chat_msg.value;
+        PB_WEBSOCKET.send(JSON.stringify(chat_obj));
         chat_msg.value = "";
+        console.log("Send Message");
+        console.log(chat_obj);
     }
 }
 
