@@ -40,9 +40,13 @@
     display: table-cell;
 }
 
-#chat-box {
+#chat-box, #chat-users {
     overflow-y: scroll;
     overflow-x: hidden;
+}
+
+#chat-box {
+    height: 530px;
 }
 
 #chat-msg {

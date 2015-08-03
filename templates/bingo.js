@@ -20,17 +20,34 @@ PB_WEBSOCKET.onopen = function (e) {
 PB_WEBSOCKET.onmessage = function (e) {
     var chat_box = document.getElementById(PB_CHATBOX);
     var message = JSON.parse(e.data);
+    var chat_box_message = false;
     if (message.cmd == "msg") {
         chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + ": </span>"
         chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+        chat_box_message = true;
     } else if (message.cmd == "error") {
         chat_box.innerHTML += "<span class=\"chat-err\">error: </span>";
         chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+        chat_box_message = true;
     } else if (message.cmd == "server") {
         chat_box.innerHTML += "<span class=\"chat-server\">" + message.msg + "</span><br>";
+        chat_box_message = true;
     } else if (message.cmd == "emote") {
         chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + " </span>"
         chat_box.innerHTML += "<span class=\"chat-emote\">" + message.msg + "</span><br>";
+        chat_box_message = true;
+    } else if (message.cmd == "who") {
+        var chat_users = document.getElementById("chat-users");
+        chat_users.innerText = "";
+        for (i = 0; i < message.who.length; i++) {
+            chat_users.innerText += message.who[i];
+            if (i < message.who.length-1) {
+                chat_users.innerText += ",  ";
+            }
+        }
+    }
+    if (chat_box_message) {
+        chat_box.scrollTop = chat_box.scrollHeight;
     }
     console.log("Receive Message");
     console.log(e.data);

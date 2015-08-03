@@ -57,6 +57,15 @@ class ChatHandler(WebSocketHandler):
         self.nick = nick
         CONNECTIONS[self.nick] = self
         self.broadcast(r)
+        self.broadcast_users()
+
+    def broadcast_users(self):
+        for handler in CONNECTIONS.values():
+            handler.send_users()
+
+    def send_users(self):
+        r = {'cmd': 'who', 'who': list(CONNECTIONS.keys())}
+        self.write_message(json.dumps(r))
 
     def on_message(self, message):
         try:
@@ -84,6 +93,8 @@ class ChatHandler(WebSocketHandler):
                 self.set_nick(msg['nick'])
             else:
                 self.chat_error('You must specify a nickname.')
+        elif msg['cmd'].lower() == 'who':
+            self.send_users()
         else:
             self.chat_error('Invalid chat command.')
 
@@ -91,6 +102,7 @@ class ChatHandler(WebSocketHandler):
         r = {'cmd': 'server', 'msg': '%s has left' % self.nick}
         del CONNECTIONS[self.nick]
         self.broadcast(r)
+        self.broadcast_users()
 
 
 def make_app():
