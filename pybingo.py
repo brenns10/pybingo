@@ -70,5 +70,5 @@ if __name__ == '__main__':
 
     # Run application.
     application = make_app()
-    application.listen(8888)
+    application.listen(args.port)
     tornado.ioloop.IOLoop.current().start()

@@ -12,9 +12,12 @@ You need Python 3, and Tornado.
     pip install tornado
 
 Or, just install from the requirements file (`pip install -r requirements.txt`).
-Then, just run the `pybingo.py` file:
+Then, just run the `pybingo.py` file.  You need to specify a board as a text
+file, which shuld have at least 24 lines (one for each cell).  You should also
+provide your hostname as an argument (for the WebSocket URL in the JavaScript
+code).  You can also specify a port.
 
-    ./pybingo.py
+    ./pybingo.py tekin.txt -H my.host.name -P 8668
 
 Contributing
 ------------
