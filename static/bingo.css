@@ -1,14 +1,35 @@
 #bingo-table {
-  width: 100%;
+    width: 600px;
+}
+
+#bingo-table tr.header {
+    height: 3em;
+}
+
+#bingo-table tr {
+    height: 7em;
+}
+
+#bingo-table th {
+    color: #ffffff;
+    background-color: #0a304e;
 }
 
 #bingo-table td {
-  width: 20%;
-  text-align: center;
-  background-color: #626262;
-  color: #ffffff;
+    width: 20%;
+    text-align: center;
+    background-color: #626262;
+    color: #ffffff;
 }
 
 #bingo-table td:hover {
-  background-color: #0a304e;
+    background-color: #0a304e;
+}
+
+#chat-div {
+    float: left;
+    padding-left: 20px;
+}
+#bingo-div {
+    float: left;
 }

@@ -5,11 +5,10 @@ from tornado.web import RequestHandler, Application, url
 from tornado.websocket import WebSocketHandler
 import tornado.ioloop
 import os.path
-import random
 
 CONNECTIONS = set()
 
-BOARD = random.sample([str(x) for x in range(100)], 24)
+BOARD = []
 
 
 class BingoHandler(RequestHandler):
@@ -20,7 +19,7 @@ class BingoHandler(RequestHandler):
 
 class ChatHandler(WebSocketHandler):
 
-    def broadcast(message):
+    def broadcast(self, message):
         for handler in CONNECTIONS:
             handler.write_message(message)
 
@@ -46,6 +45,8 @@ def make_app():
 
 
 if __name__ == '__main__':
+    import sys
+    BOARD = [l.strip() for l in open(sys.argv[1])]
     application = make_app()
     application.listen(8888)
     tornado.ioloop.IOLoop.current().start()
