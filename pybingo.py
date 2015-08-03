@@ -88,7 +88,9 @@ class ChatHandler(WebSocketHandler):
             self.chat_error('Invalid chat command.')
 
     def on_close(self):
+        r = {'cmd': 'server', 'msg': '%s has left' % self.nick}
         del CONNECTIONS[self.nick]
+        self.broadcast(r)
 
 
 def make_app():
