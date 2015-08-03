@@ -129,7 +129,7 @@ function pb_create_click_handler(rowIdx, colIdx) {
             cell.style["background-color"] = "#0a304e";
             PB_CELLS[rowIdx][colIdx] = true;
             if (pb_check(rowIdx, colIdx)) {
-                alert("You win!");
+                (new Audio("/static/bingo.mp3")).play();
             }
         } else {
             // was covered, now will not be
