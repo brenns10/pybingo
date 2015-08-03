@@ -7,51 +7,52 @@
   </head>
   <body>
     <h1>Case Bingo!</h1>
-
-    <div id="bingo-div">
-      <table id="bingo-table">
-        <tr class="header">
-          <th>B</th>
-          <th>I</th>
-          <th>N</th>
-          <th>G</th>
-          <th>O</th>
+    <div id="container">
+      <div id="bingo-div" class="left">
+        <table id="bingo-table">
+          <tr class="header">
+            <th>B</th>
+            <th>I</th>
+            <th>N</th>
+            <th>G</th>
+            <th>O</th>
+          </tr>
+          <tr>
+            {% for i in range(5) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
+          </tr>
+          <tr>
+            {% for i in range(5, 10) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
+          </tr>
+          <tr>
+            {% for i in range(10, 12) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
+            <td>Free Space</td>
+            {% for i in range(12, 14) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
         </tr>
-        <tr>
-          {% for i in range(5) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-        </tr>
-        <tr>
-          {% for i in range(5, 10) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-        </tr>
-        <tr>
-          {% for i in range(10, 12) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-          <td>Free Space</td>
-          {% for i in range(12, 14) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-        </tr>
-        <tr>
-          {% for i in range(14, 19) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-        </tr>
-        <tr>
-          {% for i in range(19, 24) %}
-          <td>{{ escape(cells[i]) }}</td>
-          {% end %}
-        </tr>
-      </table>
-    </div>
-    <div id="chat-div">
-      <textarea rows="30" cols="30" id="chat-box"></textarea>
-      <br>
-      <input type="text" id="chat-msg"></input>
+          <tr>
+            {% for i in range(14, 19) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
+          </tr>
+          <tr>
+            {% for i in range(19, 24) %}
+            <td>{{ escape(cells[i]) }}</td>
+            {% end %}
+          </tr>
+        </table>
+      </div>
+      <div id="chat-div" class="right">
+        <div id="chat-box"></div>
+        <input type="text" id="chat-msg"></input>
+      </div>
+      <div style="clear:both;"></div>
     </div>
   </body>
 </html>

@@ -10,7 +10,7 @@ var PB_CELLS;
 */
 PB_WEBSOCKET.onmessage = function (e) {
     var chat_box = document.getElementById(PB_CHATBOX);
-    chat_box.value += e.data;
+    chat_box.innerText += e.data;
     console.log("Receive message: " + e.data);
 }
 

@@ -27,9 +27,26 @@
 }
 
 #chat-div {
-    float: left;
-    padding-left: 20px;
+    width: 300px;
+    height: 100%;
+    position: relative;
 }
-#bingo-div {
-    float: left;
+
+#container {
+    display: table;
+}
+
+.left, .right {
+    display: table-cell;
+}
+
+#chat-box {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#chat-msg {
+    position: absolute;
+    bottom: 0;
+    width: 95%;
 }
