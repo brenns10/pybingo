@@ -65,7 +65,7 @@ function pb_check(rowIdx, colIdx) {
 */
 function pb_create_click_handler(rowIdx, colIdx) {
     return function() {
-        var cell = pb_get_cell(rowIdx, colIdx)
+        var cell = pb_get_cell(rowIdx, colIdx);
         if (!PB_CELLS[rowIdx][colIdx]) {
             // was not covered, now will be
             cell.style["background-color"] = "#0a304e";
@@ -78,6 +78,7 @@ function pb_create_click_handler(rowIdx, colIdx) {
             PB_CELLS[rowIdx][colIdx] = false;
             cell.style["background-color"] = "#626262";
         }
+        document.getElementById(PB_CHATMSG).focus();
     };
 }
 
@@ -99,4 +100,5 @@ window.onload = function (e) {
             pb_get_cell(r, c).addEventListener("click", pb_create_click_handler(r, c));
         }
     }
+    chat_msg.focus();
 }
