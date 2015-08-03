@@ -40,8 +40,17 @@ function pb_send(event) {
     if (event.keyCode == 13) {
         var chat_msg = document.getElementById(PB_CHATMSG);
         var chat_obj = {};
-        chat_obj["cmd"] = "msg";
-        chat_obj["msg"] = chat_msg.value;
+        var nick = /^\/nick (\w|-)+/i;
+        var match = nick.exec(chat_msg.value)
+        if (match) {
+            console.log(match);
+            var newnick = match[0].slice(6);
+            chat_obj["cmd"] = "nick";
+            chat_obj["nick"] = newnick;
+        } else {
+            chat_obj["cmd"] = "msg";
+            chat_obj["msg"] = chat_msg.value;
+        }
         PB_WEBSOCKET.send(JSON.stringify(chat_obj));
         chat_msg.value = "";
         console.log("Send Message");
