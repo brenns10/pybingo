@@ -95,11 +95,8 @@ window.onload = function (e) {
         PB_CELLS.push([]);
 
         for (c = 0; c < 5; c++) {
-            // local variables for closure
-            var rowIdx = r;
-            var colIdx = c;
             PB_CELLS[r].push(false);
-            pb_get_cell(rowIdx, colIdx).addEventListener("click", pb_create_click_handler(rowIdx, colIdx));
+            pb_get_cell(r, c).addEventListener("click", pb_create_click_handler(r, c));
         }
     }
 }
