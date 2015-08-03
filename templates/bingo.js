@@ -23,11 +23,14 @@ PB_WEBSOCKET.onmessage = function (e) {
     if (message.cmd == "msg") {
         chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + ": </span>"
         chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
-    } if (message.cmd == "error") {
+    } else if (message.cmd == "error") {
         chat_box.innerHTML += "<span class=\"chat-err\">error: </span>";
         chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
-    } if (message.cmd == "server") {
+    } else if (message.cmd == "server") {
         chat_box.innerHTML += "<span class=\"chat-server\">" + message.msg + "</span><br>";
+    } else if (message.cmd == "emote") {
+        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + " </span>"
+        chat_box.innerHTML += "<span class=\"chat-emote\">" + message.msg + "</span><br>";
     }
     console.log("Receive Message");
     console.log(e.data);
@@ -41,12 +44,17 @@ function pb_send(event) {
         var chat_msg = document.getElementById(PB_CHATMSG);
         var chat_obj = {};
         var nick = /^\/nick (\w|-)+/i;
-        var match = nick.exec(chat_msg.value)
-        if (match) {
-            console.log(match);
-            var newnick = match[0].slice(6);
+        var nick_match = nick.exec(chat_msg.value)
+        var emote = /^\/me /i
+        if (nick_match) {
+            console.log(nick_match);
+            var newnick = nick_match[0].slice(6);
             chat_obj["cmd"] = "nick";
             chat_obj["nick"] = newnick;
+        } else if (emote.test(chat_msg.value)) {
+            var emote_msg = chat_msg.value.slice(4);
+            chat_obj["cmd"] = "emote";
+            chat_obj["msg"] = emote_msg;
         } else {
             chat_obj["cmd"] = "msg";
             chat_obj["msg"] = chat_msg.value;
