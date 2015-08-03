@@ -1,5 +1,5 @@
 var PB_USERNAME = prompt("Please enter a nickname:", "bingo_user")
-var PB_WEBSOCKET = new WebSocket("ws://people.acm.case.edu:8888/chat")
+var PB_WEBSOCKET = new WebSocket("{{url}}")
 var PB_CHATBOX = "chat-box"
 var PB_CHATMSG = "chat-msg"
 var PB_BINGOTBL = "bingo-table"
