@@ -29,6 +29,9 @@ class JSHandler(RequestHandler):
 
 class ChatHandler(WebSocketHandler):
 
+    def check_origin(self, origin):
+        return True
+
     def broadcast(self, message):
         if self.nick is None:
             self.chat_error('You must set your nickname first.')
