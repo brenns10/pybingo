@@ -32,13 +32,14 @@ function send_message (message) {
 /*
   List of lists for commands you type in the chat box.
   [0]: regular expression that matches the command and captures its args
-  [1]: function that is called with the RegExp match list.  Should return an
+  [1]: text to display in help messages
+  [2]: function that is called with the RegExp match list.  Should return an
        object to serialize as JSON and send, or null if nothing should be sent
   If there is no match, defaults to "send_message()"
 */
 var send_commands = [
     [/^\/msg (.*)/i,
-     "msg [message] - send a message. same as just typing it and hitting enter.",
+     "/msg [message] - send a message. same as just typing it and hitting enter.",
      function (m) {return send_message(m[1]);}],
     [/^\/nick ([\w: -]+)/i,
      "/nick [nickname] - change your nick.  accepts letters, numbers, colons, spaces, hyphens.",
