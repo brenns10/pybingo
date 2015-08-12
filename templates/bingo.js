@@ -37,19 +37,43 @@ function send_message (message) {
   If there is no match, defaults to "send_message()"
 */
 var send_commands = [
-    [/^\/msg (.*)/i, function (m) {return send_message(m[1]);}],
-    [/^\/nick ([\w: -]+)/i, function (m) {return {"cmd": "nick", "nick": m[1]};}],
-    [/^\/me (.*)/i, function (m) {return {"cmd": "emote", "msg": m[1]};}],
-    [/^\/emoji (.*)/, function(m) {
-        if (m[1] in emoji.img_sets) {
-            emoji.img_set = m[1];
-            console.log("Emoji icons set to: " + m[1]);
-        } else {
-            recv_commands.error({'msg': 'Icon set doesn\'t exist!'},
-                                document.getElementById(PB_CHATBOX));
-        }
-        return null;
-    }],
+    [/^\/msg (.*)/i,
+     "msg [message] - send a message. same as just typing it and hitting enter.",
+     function (m) {return send_message(m[1]);}],
+    [/^\/nick ([\w: -]+)/i,
+     "/nick [nickname] - change your nick.  accepts letters, numbers, colons, spaces, hyphens.",
+     function (m) {return {"cmd": "nick", "nick": m[1]};}],
+    [/^\/me (.*)/i,
+     "/me [message] - send a message as a narration, e.g. /me laughs",
+     function (m) {return {"cmd": "emote", "msg": m[1]};}],
+    [/^\/emoji (.*)/,
+     "/emoji [iconset] - change your emoji iconset.  options are apple, google, twitter, emojione",
+     function(m) {
+         if (m[1] in emoji.img_sets) {
+             emoji.img_set = m[1];
+             console.log("Emoji icons set to: " + m[1]);
+         } else {
+             recv_commands.error({'msg': 'Icon set doesn\'t exist!'},
+                                 document.getElementById(PB_CHATBOX));
+         }
+         return null;
+     }],
+    [/^\/clear/i,
+     "/clear - empty out your chat buffer",
+     function (m) {
+         document.getElementById(PB_CHATBOX).innerHTML = "";
+         return null;
+     }],
+    [/^\/help/i,
+     "/help - show help for chat commands",
+     function (m) {
+         var chat_box = document.getElementById(PB_CHATBOX);
+         for (i = 0; i < send_commands.length; i++) {
+             chat_box.innerHTML += "<span class=\"chat-server\">" + send_commands[i][1] + "<br></span>";
+         }
+         console.log("send help");
+         return null;
+     }],
 ];
 
 /*
@@ -118,7 +142,7 @@ function pb_send(event) {
         var chat_msg = document.getElementById(PB_CHATMSG);
         for (i = 0; i < send_commands.length; i++) {
             var pattern = send_commands[i][0];
-            var func =  send_commands[i][1];
+            var func =  send_commands[i][2];
             var match = pattern.exec(chat_msg.value);
             if (match) {
                 var obj = func(match);
