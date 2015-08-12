@@ -129,6 +129,10 @@ PB_WEBSOCKET.onmessage = function (e) {
     if (cmd in recv_commands) {
         if (recv_commands[cmd](message, chat_box)) {
             chat_box.scrollTop = chat_box.scrollHeight;
+            if (document.hidden) {
+                var note = new Notification("New chat events in Case Bingo!");
+                note.show();
+            }
         }
     }
     console.log("Receive:" + e.data);
@@ -231,6 +235,8 @@ window.onload = function (e) {
     // Add enter button listener.
     var chat_msg = document.getElementById(PB_CHATMSG);
     chat_msg.addEventListener("keypress", pb_send);
+
+    Notification.requestPermission();
 
     // Initialize array of cells and the click handlers.
     PB_CELLS = [];
