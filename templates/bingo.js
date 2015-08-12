@@ -38,11 +38,11 @@ PB_WEBSOCKET.onmessage = function (e) {
         chat_box_message = true;
     } else if (message.cmd == "who") {
         var chat_users = document.getElementById("chat-users");
-        chat_users.innerText = "";
+        chat_users.textContent = "";
         for (i = 0; i < message.who.length; i++) {
-            chat_users.innerText += message.who[i];
+            chat_users.textContent += message.who[i];
             if (i < message.who.length-1) {
-                chat_users.innerText += ",  ";
+                chat_users.textContent += ",  ";
             }
         }
     }
