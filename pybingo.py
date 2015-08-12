@@ -54,7 +54,7 @@ class ChatHandler(WebSocketHandler):
             return
         if self.nick is not None:
             r = {'cmd': 'server',
-                 'msg': '%s is now known is %s' % (self.nick, nick)}
+                 'msg': '%s is now known as %s' % (self.nick, nick)}
             del CONNECTIONS[self.nick]
         else:
             r = {'cmd': 'server',
