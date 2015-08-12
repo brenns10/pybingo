@@ -1,5 +1,5 @@
-PyBingo ![https://img.shields.io/badge/uses-emoji-ff69b4.svg](uses emoji)
-![https://img.shields.io/badge/powered%20by-cwru-0a304e.svg](powered by cwru) ![https://img.shields.io/badge/runs_on-shitty_js-red.svg](runs on shitty js)
+PyBingo ![uses emoji](https://img.shields.io/badge/uses-emoji-ff69b4.svg)
+![powered by cwru](https://img.shields.io/badge/powered%20by-cwru-0a304e.svg) ![runs on shitty js](https://img.shields.io/badge/runs_on-shitty_js-red.svg)
 =======
 
 This is a re-implementation of [Oldham Bingo][].  It is a web-based bingo game
