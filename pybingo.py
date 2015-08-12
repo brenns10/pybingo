@@ -8,6 +8,7 @@ import os.path
 import argparse
 import json
 import random
+from markupsafe import escape
 
 CONNECTIONS = {}
 BOARD = []
@@ -71,12 +72,23 @@ class ChatHandler(WebSocketHandler):
         r = {'cmd': 'who', 'who': list(CONNECTIONS.keys())}
         self.write_message(json.dumps(r))
 
+    def sanitize(self, message):
+        if type(message) is str:
+            return escape(message)
+        elif type(message) is list:
+            return [self.sanitize(x) for x in message]
+        elif type(message) is dict:
+            return {k: self.sanitize(v) for k, v in message.items()}
+        else:
+            return message
+
     def on_message(self, message):
         try:
             msg = json.loads(message)
         except ValueError:
             self.chat_error('Could not decode JSON message.')
             return
+        msg = self.sanitize(msg)
 
         if 'cmd' not in msg:
             self.chat_error('Missing "cmd" argument.')
