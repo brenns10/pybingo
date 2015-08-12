@@ -7,17 +7,26 @@ with integrated chat room.
 Instructions
 ------------
 
-You need Python 3, and Tornado.
+### Setup
 
-    pip install tornado
+You'll need to have Python 3, with pip, and pyvenv working for it.
 
-Or, just install from the requirements file (`pip install -r requirements.txt`).
-Then, just run the `pybingo.py` file.  You need to specify a board as a text
-file, which shuld have at least 24 lines (one for each cell).  You should also
-provide your hostname as an argument (for the WebSocket URL in the JavaScript
-code).  You can also specify a port.
+```bash
+git submodule init
+git submodule update # this will take a while to get emoji stuff
+pyvenv venv          # substitute whatever works for Python 3 on your system
+. venv/bin/activate
+pip install -r requirements.txt
+```
 
-    ./pybingo.py tekin.txt -H my.host.name -P 8668
+### Running
+
+Just run the `pybingo.py` file with a board name to start serving.  However, by
+default this will be on `localhost:8888`.  You can specify a hostname with `-H`,
+and a port with `-P` (you'll need root for port 80).
+
+    ./pybingo.py tekin.txt -H my.host.name -P 8888
+
 
 Contributing
 ------------
