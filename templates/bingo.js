@@ -5,6 +5,13 @@ var PB_CHATMSG = "chat-msg"
 var PB_BINGOTBL = "bingo-table"
 var PB_CELLS;
 
+/*******************************************************************************
+                                  Chat stuff!
+*******************************************************************************/
+
+/*
+  Called when the websocket is opened - we first set our nickname.
+*/
 PB_WEBSOCKET.onopen = function (e) {
     var chat_obj = {};
     chat_obj["cmd"] = "nick";
@@ -14,43 +21,93 @@ PB_WEBSOCKET.onopen = function (e) {
     console.log(chat_obj);
 };
 
+/* Replace :smile: or :) type emojis with images. */
+function emojify(x) {return emoji.replace_emoticons(emoji.replace_colons(x));};
+
+/* Return a JSON object for broadcasting a message. */
+function send_message (message) {
+    return {"cmd": "msg", "msg": message};
+}
+
+/*
+  List of lists for commands you type in the chat box.
+  [0]: regular expression that matches the command and captures its args
+  [1]: function that is called with the RegExp match list.  Should return an
+       object to serialize as JSON and send, or null if nothing should be sent
+  If there is no match, defaults to "send_message()"
+*/
+var send_commands = [
+    [/^\/msg (.*)/i, function (m) {return send_message(m[1]);}],
+    [/^\/nick ([\w: -]+)/i, function (m) {return {"cmd": "nick", "nick": m[1]};}],
+    [/^\/me (.*)/i, function (m) {return {"cmd": "emote", "msg": m[1]};}],
+    [/^\/emoji (.*)/, function(m) {
+        if (m[1] in emoji.img_sets) {
+            emoji.img_set = m[1];
+            console.log("Emoji icons set to: " + m[1]);
+        } else {
+            recv_commands.error({'msg': 'Icon set doesn\'t exist!'},
+                                document.getElementById(PB_CHATBOX));
+        }
+        return null;
+    }],
+];
+
+/*
+  Dictionary mapping received command names to their implementations.
+  Implementation functions take the message (parsed as JSON) as their first
+  argument, and the chat box div as their second argument.
+*/
+var recv_commands = {
+    msg: function(message, chat_box) {
+        message.msg = emojify(message.msg);
+        message.from = emojify(message.from);
+        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + ": </span>"
+        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+        return true;
+    },
+    error: function (message, chat_box) {
+        chat_box.innerHTML += "<span class=\"chat-err\">error: </span>";
+        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
+        return true;
+    },
+    server: function (message, chat_box) {
+        message.msg = emojify(message.msg);
+        chat_box.innerHTML += "<span class=\"chat-server\">" + message.msg + "</span><br>";
+        return true;
+    },
+    emote: function (message, chat_box) {
+        message.msg = emojify(message.msg);
+        message.from = emojify(message.from);
+        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + " </span>"
+        chat_box.innerHTML += "<span class=\"chat-emote\">" + message.msg + "</span><br>";
+    },
+    who: function (message, chat_box) {
+        var users = "";
+        for (i = 0; i < message.who.length; i++) {
+            users += message.who[i];
+            if (i < message.who.length-1) {
+                users += ",  ";
+            }
+        }
+        users = emojify(users);
+        document.getElementById("chat-users").innerHTML = users;
+        return false;
+    }
+};
+
 /*
   Message receipt function.
 */
 PB_WEBSOCKET.onmessage = function (e) {
     var chat_box = document.getElementById(PB_CHATBOX);
     var message = JSON.parse(e.data);
-    var chat_box_message = false;
-    if (message.cmd == "msg") {
-        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + ": </span>"
-        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
-        chat_box_message = true;
-    } else if (message.cmd == "error") {
-        chat_box.innerHTML += "<span class=\"chat-err\">error: </span>";
-        chat_box.innerHTML += "<span class=\"chat-text\">" + message.msg + "</span><br>";
-        chat_box_message = true;
-    } else if (message.cmd == "server") {
-        chat_box.innerHTML += "<span class=\"chat-server\">" + message.msg + "</span><br>";
-        chat_box_message = true;
-    } else if (message.cmd == "emote") {
-        chat_box.innerHTML += "<span class=\"chat-from\">" + message.from + " </span>"
-        chat_box.innerHTML += "<span class=\"chat-emote\">" + message.msg + "</span><br>";
-        chat_box_message = true;
-    } else if (message.cmd == "who") {
-        var chat_users = document.getElementById("chat-users");
-        chat_users.textContent = "";
-        for (i = 0; i < message.who.length; i++) {
-            chat_users.textContent += message.who[i];
-            if (i < message.who.length-1) {
-                chat_users.textContent += ",  ";
-            }
+    var cmd = message.cmd.toLowerCase();
+    if (cmd in recv_commands) {
+        if (recv_commands[cmd](message, chat_box)) {
+            chat_box.scrollTop = chat_box.scrollHeight;
         }
     }
-    if (chat_box_message) {
-        chat_box.scrollTop = chat_box.scrollHeight;
-    }
-    console.log("Receive Message");
-    console.log(e.data);
+    console.log("Receive:" + e.data);
 }
 
 /*
@@ -59,29 +116,32 @@ PB_WEBSOCKET.onmessage = function (e) {
 function pb_send(event) {
     if (event.keyCode == 13) {
         var chat_msg = document.getElementById(PB_CHATMSG);
-        var chat_obj = {};
-        var nick = /^\/nick (\w|-)+/i;
-        var nick_match = nick.exec(chat_msg.value)
-        var emote = /^\/me /i
-        if (nick_match) {
-            console.log(nick_match);
-            var newnick = nick_match[0].slice(6);
-            chat_obj["cmd"] = "nick";
-            chat_obj["nick"] = newnick;
-        } else if (emote.test(chat_msg.value)) {
-            var emote_msg = chat_msg.value.slice(4);
-            chat_obj["cmd"] = "emote";
-            chat_obj["msg"] = emote_msg;
-        } else {
-            chat_obj["cmd"] = "msg";
-            chat_obj["msg"] = chat_msg.value;
+        for (i = 0; i < send_commands.length; i++) {
+            var pattern = send_commands[i][0];
+            var func =  send_commands[i][1];
+            var match = pattern.exec(chat_msg.value);
+            if (match) {
+                var obj = func(match);
+                chat_msg.value = "";
+                if (obj) { // only send if not null
+                    var msg = JSON.stringify(obj);
+                    PB_WEBSOCKET.send(msg);
+                    console.log("Send:" + msg);
+                }
+                return;
+            }
         }
-        PB_WEBSOCKET.send(JSON.stringify(chat_obj));
+        // send_message won't return null
+        var msg = JSON.stringify(send_message(chat_msg.value));
+        PB_WEBSOCKET.send(msg);
         chat_msg.value = "";
-        console.log("Send Message");
-        console.log(chat_obj);
+        console.log("Send:" + msg);
     }
 }
+
+/*******************************************************************************
+                                  Bingo Stuff
+*******************************************************************************/
 
 /*
   Return the DOM element of the table data for cell (rowIdx, colIdx).

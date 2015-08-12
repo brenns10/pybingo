@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Oldham Bingo"""
 
-from tornado.web import RequestHandler, Application, url
+from tornado.web import RequestHandler, Application, url, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 import tornado.ioloop
 import os.path
@@ -122,12 +122,17 @@ class ChatHandler(WebSocketHandler):
 
 
 def make_app():
+    dirname = os.path.dirname(__file__)
+    static_path = os.path.join(dirname, "static")
+    emoji_data_path = os.path.join(dirname, "emoji-data")
     return Application([
             url(r'/', BingoHandler),
             url(r'/chat', ChatHandler),
             url(r'/bingo.js', JSHandler),
+            url(r'/static/(.*)', StaticFileHandler, {'path': static_path}),
+            url(r'/emoji-data/(.*)', StaticFileHandler,
+                {'path': emoji_data_path}),
         ],
-        static_path=os.path.join(os.path.dirname(__file__), "static"),
     )
 
 
