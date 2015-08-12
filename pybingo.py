@@ -155,4 +155,10 @@ if __name__ == '__main__':
     # Run application.
     application = make_app()
     application.listen(args.port)
-    tornado.ioloop.IOLoop.current().start()
+    try:
+        tornado.ioloop.IOLoop.current().start()
+    except KeyboardInterrupt:
+        # Let everyone know that the server is shutting down
+        for connection in CONNECTIONS.values():
+            connection.chat_error("Server is shutting down.")
+            connection.close()
