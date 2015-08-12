@@ -3,6 +3,7 @@ var PB_WEBSOCKET = new WebSocket("{{url}}")
 var PB_CHATBOX = "chat-box"
 var PB_CHATMSG = "chat-msg"
 var PB_BINGOTBL = "bingo-table"
+var PB_CHATCMDS = "chat-commands"
 var PB_CELLS;
 
 /*******************************************************************************
@@ -237,6 +238,7 @@ window.onload = function (e) {
     var chat_msg = document.getElementById(PB_CHATMSG);
     chat_msg.addEventListener("keypress", pb_send);
 
+    // Request permission to send notifications.
     Notification.requestPermission();
 
     // Initialize array of cells and the click handlers.
@@ -249,5 +251,15 @@ window.onload = function (e) {
             pb_get_cell(r, c).addEventListener("click", pb_create_click_handler(r, c));
         }
     }
+
+    // Initialize Help Div
+    help = "<ul>"
+    for (i = 0; i < send_commands.length; i++) {
+        help += "<li>" + send_commands[i][1] + "</li>";
+    }
+    help += "</ul>";
+    document.getElementById(PB_CHATCMDS).innerHTML = help;
+
+    // Bring focus to the chat box so we can talk!
     chat_msg.focus();
 }
