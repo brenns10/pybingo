@@ -9,6 +9,7 @@ import argparse
 import json
 import random
 from markupsafe import escape
+import logging
 
 CONNECTIONS = {}
 BOARD = []
@@ -38,8 +39,10 @@ class ChatHandler(WebSocketHandler):
             self.chat_error('You must set your nickname first.')
             return
         message['from'] = self.nick
+        msg = json.dumps(message)
         for handler in CONNECTIONS.values():
-            handler.write_message(json.dumps(message))
+            handler.write_message(msg)
+        logging.info(msg)
 
     def open(self):
         self.nick = None
@@ -145,8 +148,11 @@ if __name__ == '__main__':
                         type=str, default='localhost')
     parser.add_argument('-P', '--port', help='port',
                         type=int, default=8888)
+    parser.add_argument('-v', '--verbose', action='store_true')
     args = parser.parse_args()
 
+    if args.verbose:
+        logging.getLogger().setLevel(logging.INFO)
     # Set important globals.
     BOARD = [l.strip() for l in args.board]
     random.shuffle(BOARD)
